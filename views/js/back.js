@@ -26,7 +26,7 @@
 * to avoid any conflicts with others containers.
 */
 
-$(document).ready(function () {
+document.addEventListener('DOMContentLoaded', function () {
 
   if (typeof allCmses === 'undefined' || allCmses.length === 0) {
     return
