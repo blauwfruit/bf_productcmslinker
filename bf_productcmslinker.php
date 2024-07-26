@@ -306,8 +306,8 @@ class Bf_productcmslinker extends Module
         foreach ($input as $k => $value) {
             $newLinkers[] = (int)$value->id_cms;
 
-            if ($value->lang_id) {
-                $idLang = $value->lang_id;
+            if ($value->id_lang) {
+                $idLang = $value->id_lang;
             }
         }
 
