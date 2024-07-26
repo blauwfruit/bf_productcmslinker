@@ -283,6 +283,7 @@ class Bf_productcmslinker extends Module
      */
     public function hookActionProductUpdate($params)
     {
+
         if (true === $this->isUpdated) {
             return null;
         }
@@ -302,26 +303,24 @@ class Bf_productcmslinker extends Module
         $input = json_decode($bfProductCmsLinker);
         $idLang = (int)$this->context->language->id;
 
-        $newLinkers = [];
-        foreach ($input as $k => $value) {
-            $newLinkers[] = (int)$value->id_cms;
+        $cmsPages = [];
+        foreach ($input as $value) {
+            $cmsPages[] = (int) $value->id_cms;
 
             if ($value->id_lang) {
                 $idLang = $value->id_lang;
             }
         }
 
-        // linkers are array of IDs to be saved in pivot table
-
         $existingCmses = BfProductCmsLinker::getCmsesByIdProduct($idLang, $idProduct);
 
-        // if existing linked cmses are not part of newLinkers array
+        // if existing linked cmses are not part of cmsPages array
         // we are going to collect those and delete it at once after loop
         $cmsForDeleting = [];
         $existingCmsIds = [];
         foreach ($existingCmses as $k => $value) {
             $idCms = (int)$value['id_cms'];
-            if (!in_array($idCms, $newLinkers)) {
+            if (!in_array($idCms, $cmsPages)) {
                 // collect IDs for deleting
                 $cmsForDeleting[] = $idCms;
             } else {
@@ -334,7 +333,7 @@ class Bf_productcmslinker extends Module
             BfProductCmsLinker::deleteByCmsIds($idLang, $idProduct, $cmsForDeleting);
         }
 
-        $cmsIdsToStore = array_diff($newLinkers, $existingCmsIds);
+        $cmsIdsToStore = array_diff($cmsPages, $existingCmsIds);
 
         if (count($cmsIdsToStore)) {
             // add these IDs
