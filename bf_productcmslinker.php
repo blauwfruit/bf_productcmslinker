@@ -108,11 +108,8 @@ class Bf_productcmslinker extends Module
             $this->postProcess();
         }
 
-        $this->context->smarty->assign('module_dir', $this->_path);
-
-        $output = $this->context->smarty->fetch($this->local_path.'views/templates/admin/configure.tpl');
-
-        return $output.$this->renderForm();
+        return $this->renderForm().
+            $this->context->smarty->fetch($this->local_path.'views/templates/admin/configure.tpl');
     }
 
     /**
@@ -157,10 +154,10 @@ class Bf_productcmslinker extends Module
                 'input' => array(
                     array(
                         'type' => 'switch',
-                        'label' => $this->l('Live mode'),
-                        'name' => 'BF_PRODUCTCMSLINKER_LIVE_MODE',
+                        'label' => $this->l('Display on product pages'),
+                        'name' => 'BF_PRODUCTCMSLINKER_DISPLAY_ON_PRODUCTPAGE',
                         'is_bool' => true,
-                        'desc' => $this->l('Use this module in live mode'),
+                        'desc' => $this->l('Display related products on the CMS page'),
                         'values' => array(
                             array(
                                 'id' => 'active_on',
@@ -175,17 +172,23 @@ class Bf_productcmslinker extends Module
                         ),
                     ),
                     array(
-                        'col' => 3,
-                        'type' => 'text',
-                        'prefix' => '<i class="icon icon-envelope"></i>',
-                        'desc' => $this->l('Enter a valid email address'),
-                        'name' => 'BF_PRODUCTCMSLINKER_ACCOUNT_EMAIL',
-                        'label' => $this->l('Email'),
-                    ),
-                    array(
-                        'type' => 'password',
-                        'name' => 'BF_PRODUCTCMSLINKER_ACCOUNT_PASSWORD',
-                        'label' => $this->l('Password'),
+                        'type' => 'switch',
+                        'label' => $this->l('Display on CMS pages'),
+                        'name' => 'BF_PRODUCTCMSLINKER_DISPLAY_ON_CMSPAGE',
+                        'is_bool' => true,
+                        'desc' => $this->l('Display related pages on the product page'),
+                        'values' => array(
+                            array(
+                                'id' => 'active_on',
+                                'value' => true,
+                                'label' => $this->l('Enabled')
+                            ),
+                            array(
+                                'id' => 'active_off',
+                                'value' => false,
+                                'label' => $this->l('Disabled')
+                            )
+                        ),
                     ),
                 ),
                 'submit' => array(
@@ -201,9 +204,8 @@ class Bf_productcmslinker extends Module
     protected function getConfigFormValues()
     {
         return array(
-            'BF_PRODUCTCMSLINKER_LIVE_MODE' => Configuration::get('BF_PRODUCTCMSLINKER_LIVE_MODE', true),
-            'BF_PRODUCTCMSLINKER_ACCOUNT_EMAIL' => Configuration::get('BF_PRODUCTCMSLINKER_ACCOUNT_EMAIL', 'contact@prestashop.com'),
-            'BF_PRODUCTCMSLINKER_ACCOUNT_PASSWORD' => Configuration::get('BF_PRODUCTCMSLINKER_ACCOUNT_PASSWORD', null),
+            'BF_PRODUCTCMSLINKER_DISPLAY_ON_PRODUCTPAGE' => Configuration::get('BF_PRODUCTCMSLINKER_DISPLAY_ON_PRODUCTPAGE', true),
+            'BF_PRODUCTCMSLINKER_DISPLAY_ON_CMSPAGE' => Configuration::get('BF_PRODUCTCMSLINKER_DISPLAY_ON_CMSPAGE', true),
         );
     }
 
@@ -402,6 +404,10 @@ class Bf_productcmslinker extends Module
      */
     public function hookDisplayFooterProduct($params)
     {
+        if (!Configuration::get('BF_PRODUCTCMSLINKER_DISPLAY_ON_PRODUCTPAGE')) {
+            return;
+        }
+
         $id_lang = (int)$this->context->language->id;
         $id_product = (int)Tools::getValue('id_product');
 
@@ -431,6 +437,10 @@ class Bf_productcmslinker extends Module
      */
     public function hookDisplayProductInCMS($params)
     {
+        if (!Configuration::get('BF_PRODUCTCMSLINKER_DISPLAY_ON_CMSPAGE')) {
+            return;
+        }
+
         if ($this->context->controller->php_self !== 'cms') {
             return;
         }

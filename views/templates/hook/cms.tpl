@@ -14,7 +14,7 @@
     <div class="container">
       <div class="row">
         <div class="col-md-12">
-          <h2>{l s='Projects with this product' mod='bf_productcmslinker'}</h2>
+          <h2>{l s='Related info to this product' mod='bf_productcmslinker'}</h2>
         </div>
       </div>
      <div class="row">

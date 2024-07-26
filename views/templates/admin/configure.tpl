@@ -24,25 +24,10 @@
 *}
 
 <div class="panel">
-	<h3><i class="icon icon-credit-card"></i> {l s='Product CMS linker' mod='bf_productcmslinker'}</h3>
+	<h3>{l s='Documentation' mod='bf_productcmslinker'}</h3>
 	<p>
-		<strong>{l s='Here is my new generic module!' mod='bf_productcmslinker'}</strong><br />
-		{l s='Thanks to PrestaShop, now I have a great module.' mod='bf_productcmslinker'}<br />
-		{l s='I can configure it using the following configuration form.' mod='bf_productcmslinker'}
-	</p>
-	<br />
-	<p>
-		{l s='This module will boost your sales!' mod='bf_productcmslinker'}
-	</p>
-</div>
-
-<div class="panel">
-	<h3><i class="icon icon-tags"></i> {l s='Documentation' mod='bf_productcmslinker'}</h3>
-	<p>
-		&raquo; {l s='You can get a PDF documentation to configure this module' mod='bf_productcmslinker'} :
-		<ul>
-			<li><a href="#" target="_blank">{l s='English' mod='bf_productcmslinker'}</a></li>
-			<li><a href="#" target="_blank">{l s='French' mod='bf_productcmslinker'}</a></li>
-		</ul>
+		<br>
+		{l s='Read more about this module on GitHub:'}
+		<a href="https://github.com/blauwfruit/bf_productcmslinker">github.com/blauwfruit/bf_productcmslinker</a>
 	</p>
 </div>
