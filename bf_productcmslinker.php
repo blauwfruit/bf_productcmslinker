@@ -234,7 +234,7 @@ class Bf_productcmslinker extends Module
         $this->context->controller->addCSS($this->_path.'views/css/tagify.css');
         $this->context->controller->addCSS($this->_path.'views/css/back.css');
         // JS
-        // $this->context->controller->addJS($this->_path.'views/js/jquery-1.12.4.js');
+        $this->context->controller->addJS($this->_path.'views/js/jquery-1.12.4.js');
         $this->context->controller->addJS($this->_path.'views/js/tagify.min.js');
         $this->context->controller->addJS($this->_path.'views/js/back.js');
     }
