@@ -26,14 +26,14 @@
  * to avoid any conflicts with others containers.
  */
 
-$(document).ready(function () {
+document.addEventListener('DOMContentLoaded', function () {
 
   if (!Array.isArray(allCmses) || !allCmses.length) {
     return;
   }
 
   var renameKey = function(arr) {
-    $.each(arr, function(i, el) {
+    arr.forEach(function(el) {
       el.value = el.meta_title;
       delete el.meta_title;
     });
@@ -41,7 +41,8 @@ $(document).ready(function () {
 
   renameKey(allCmses);
 
-  var tagify = new Tagify($('input[name=bf_product_cms_linker]')[0], {
+  var inputElement = document.querySelector('input[name=bf_product_cms_linker]');
+  var tagify = new Tagify(inputElement, {
     delimiters: null,
     templates: {
       tag: function(tagData) {
