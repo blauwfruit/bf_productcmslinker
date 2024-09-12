@@ -230,6 +230,15 @@ class Bf_productcmslinker extends Module
             return;
         }
 
+        $id_lang = (int)$this->context->language->id;
+        $id_product = (int)Tools::getValue('id_product');
+
+        $allCmses = BfProductCmsLinker::getAll($id_lang);
+
+        $productCmses = BfProductCmsLinker::getCmsesByIdProduct($id_lang, $id_product);
+
+        Media::addJsDef(['allCmses' => $allCmses, 'productCmses' => $productCmses]);
+
         // CSS
         $this->context->controller->addCSS($this->_path.'views/css/tagify.css');
         $this->context->controller->addCSS($this->_path.'views/css/back.css');
@@ -260,19 +269,7 @@ class Bf_productcmslinker extends Module
         if ('AdminProducts' !== $this->context->controller->php_self) {
             return;
         }
-
-        $id_lang = (int)$this->context->language->id;
-        $id_product = (int)$params['id_product'];
-
-        $allCmses = BfProductCmsLinker::getAll($id_lang);
-
-        $productCmses = BfProductCmsLinker::getCmsesByIdProduct($id_lang, $id_product);
-
-        $this->context->smarty->assign([
-            'all_cmses' => $allCmses,
-            'product_cmses' => $productCmses
-        ]);
-
+        
         return $this->display(__FILE__, 'display_admin_products_extra.tpl');
     }
 
