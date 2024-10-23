@@ -81,7 +81,7 @@ class Bf_productcmslinker extends Module
             && $this->registerHook('actionProductUpdate')
             && $this->registerHook('displayAdminProductsExtra')
             && $this->registerHook('displayFooterProduct')
-            && $this->registerHook('displayProductInCMS');
+            && $this->registerHook('displayContentWrapperBottom');
     }
 
     /**
@@ -432,7 +432,7 @@ class Bf_productcmslinker extends Module
      * @throws PrestaShopException
      * @throws ReflectionException
      */
-    public function hookDisplayProductInCMS($params)
+    public function hookDisplayContentWrapperBottom($params)
     {
         if (!Configuration::get('BF_PRODUCTCMSLINKER_DISPLAY_ON_CMSPAGE')) {
             return;
@@ -442,20 +442,21 @@ class Bf_productcmslinker extends Module
             return;
         }
 
-        $id_cms = (int)$params['cms']['id'];
+        $id_cms = (int)Tools::getValue('id_cms');
+
         $products = $this->getProductsByIdCms($id_cms);
 
         if (!$products) {
             return;
         }
 
-
         $this->context->smarty->assign([
-            'products' => $products
+            'products' => $products,
         ]);
 
         return $this->context->smarty->fetch('module:bf_productcmslinker/views/templates/hook/products.tpl');
     }
+
 
 
     /**
