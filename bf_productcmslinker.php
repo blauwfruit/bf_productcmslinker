@@ -157,7 +157,7 @@ class Bf_productcmslinker extends Module
                         'label' => $this->l('Display on product pages'),
                         'name' => 'BF_PRODUCTCMSLINKER_DISPLAY_ON_PRODUCTPAGE',
                         'is_bool' => true,
-                        'desc' => $this->l('Display related products on the CMS page'),
+                        'desc' => $this->l('Display related pages on the product page'),
                         'values' => array(
                             array(
                                 'id' => 'active_on',
@@ -176,7 +176,7 @@ class Bf_productcmslinker extends Module
                         'label' => $this->l('Display on CMS pages'),
                         'name' => 'BF_PRODUCTCMSLINKER_DISPLAY_ON_CMSPAGE',
                         'is_bool' => true,
-                        'desc' => $this->l('Display related pages on the product page'),
+                        'desc' => $this->l('Display related products on the CMS page'),
                         'values' => array(
                             array(
                                 'id' => 'active_on',
@@ -230,11 +230,20 @@ class Bf_productcmslinker extends Module
             return;
         }
 
+        $id_lang = (int)$this->context->language->id;
+        $id_product = (int)Tools::getValue('id_product');
+
+        $allCmses = BfProductCmsLinker::getAll($id_lang);
+
+        $productCmses = BfProductCmsLinker::getCmsesByIdProduct($id_lang, $id_product);
+
+        Media::addJsDef(['allCmses' => $allCmses, 'productCmses' => $productCmses]);
+
         // CSS
         $this->context->controller->addCSS($this->_path.'views/css/tagify.css');
         $this->context->controller->addCSS($this->_path.'views/css/back.css');
+
         // JS
-        // $this->context->controller->addJS($this->_path.'views/js/jquery-1.12.4.js');
         $this->context->controller->addJS($this->_path.'views/js/tagify.min.js');
         $this->context->controller->addJS($this->_path.'views/js/back.js');
     }
@@ -260,18 +269,6 @@ class Bf_productcmslinker extends Module
         if ('AdminProducts' !== $this->context->controller->php_self) {
             return;
         }
-
-        $id_lang = (int)$this->context->language->id;
-        $id_product = (int)$params['id_product'];
-
-        $allCmses = BfProductCmsLinker::getAll($id_lang);
-
-        $productCmses = BfProductCmsLinker::getCmsesByIdProduct($id_lang, $id_product);
-
-        $this->context->smarty->assign([
-            'all_cmses' => $allCmses,
-            'product_cmses' => $productCmses
-        ]);
 
         return $this->display(__FILE__, 'display_admin_products_extra.tpl');
     }
@@ -445,11 +442,13 @@ class Bf_productcmslinker extends Module
             return;
         }
 
-        $products = $this->getProductsByIdCms((int)$params['cms']['id']);
+        $id_cms = (int)$params['cms']['id'];
+        $products = $this->getProductsByIdCms($id_cms);
 
-        if ($products === false) {
+        if (!$products) {
             return;
         }
+
 
         $this->context->smarty->assign([
             'products' => $products
@@ -457,6 +456,7 @@ class Bf_productcmslinker extends Module
 
         return $this->context->smarty->fetch('module:bf_productcmslinker/views/templates/hook/products.tpl');
     }
+
 
     /**
      * @param $id_cms
@@ -466,45 +466,39 @@ class Bf_productcmslinker extends Module
      */
     protected function getProductsByIdCms($id_cms)
     {
-        $cms_products = DB::getInstance()->executeS('SELECT id_product FROM ps_bf_product_cms_linker WHERE id_cms=' . (int)$id_cms);
+        $cms_products = DB::getInstance()->executeS('SELECT id_product FROM ' . _DB_PREFIX_ . 'bf_product_cms_linker WHERE id_cms=' . (int)$id_cms);
 
-        if ($cms_products === false) {
+        if ($cms_products === false || empty($cms_products)) {
             return false;
         }
 
-        foreach ($cms_products as &$cms_product) {
-            $cms_product = ['product_id' => $cms_product['id_product']];
-        }
-
-
+        $productsForTemplate = [];
         $showPrice = (bool) Configuration::get('CROSSSELLING_DISPLAY_PRICE');
 
         $assembler = new ProductAssembler($this->context);
-
         $presenterFactory = new ProductPresenterFactory($this->context);
         $presentationSettings = $presenterFactory->getPresentationSettings();
+        $presentationSettings->showPrices = $showPrice;
+
         $presenter = new ProductListingPresenter(
-            new ImageRetriever(
-                $this->context->link
-            ),
+            new ImageRetriever($this->context->link),
             $this->context->link,
             new PriceFormatter(),
             new ProductColorsRetriever(),
             $this->context->getTranslator()
         );
 
-        $productsForTemplate = array();
+        foreach ($cms_products as $productData) {
+            $product = $assembler->assembleProduct(['id_product' => $productData['id_product']]);
 
-        $presentationSettings->showPrices = $showPrice;
-
-        foreach ($cms_products as $productId) {
             $productsForTemplate[] = $presenter->present(
                 $presentationSettings,
-                $assembler->assembleProduct(array('id_product' => $productId['product_id'])),
+                $product,
                 $this->context->language
             );
         }
 
         return $productsForTemplate;
     }
+
 }
