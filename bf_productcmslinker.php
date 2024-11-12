@@ -282,7 +282,6 @@ class Bf_productcmslinker extends Module
      */
     public function hookActionProductUpdate($params)
     {
-
         if (true === $this->isUpdated) {
             return null;
         }
@@ -500,5 +499,4 @@ class Bf_productcmslinker extends Module
 
         return $productsForTemplate;
     }
-
 }
