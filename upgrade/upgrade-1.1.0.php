@@ -34,10 +34,7 @@ if (!defined('_PS_VERSION_')) {
  */
 function upgrade_module_1_1_0($module)
 {
-    /*
-     * Do everything you want right there,
-     * You could add a column in one of your module's tables
-     */
+    $module->unregisterHook('displayProductInCMS');
 
-    return true;
+    return $module->registerHook('displayContentWrapperBottom');
 }
